@@ -1,5 +1,5 @@
 package com.ipaste.core;
 
-public class Tst2 {
+public class Paste {
 
 }
