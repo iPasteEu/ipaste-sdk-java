@@ -1,6 +1,10 @@
 package com.ipaste.core;
 
+import java.util.List;
+
 import com.ipaste.paste.Paste;
+import com.ipaste.response.IPasteResponseFormat;
+import com.ipaste.response.IPasteResponseFormatAdvanced;
 
 public interface IPasteCore extends IPasteConstants {
 	/**
@@ -46,7 +50,7 @@ public interface IPasteCore extends IPasteConstants {
 	 * @return mixed textual or JSON list (according to the input format) of
 	 *         users pastes or an KO with the error description
 	 */
-	public String getUserPastes();
+	public List<Integer> getUserPastes();
 
 	/**
 	 * Retrieves users paste IDs formatted according to the input format value.
@@ -56,7 +60,7 @@ public interface IPasteCore extends IPasteConstants {
 	 * @param tmpKey
 	 * @return
 	 */
-	public String getUserPastes(ResponseFormat format, String username, String tmpKey);
+	public List<Integer> getUserPastes(IPasteResponseFormat format, String username, String tmpKey);
 
 	/**
 	 * Updates users paste. You shoud set the iPastePaste id otherwise it will
@@ -70,7 +74,7 @@ public interface IPasteCore extends IPasteConstants {
 	 *            function.
 	 * @return mixed paste ID or an KO with the error description
 	 */
-	public String update(Paste paste);
+	public int update(Paste paste);
 
 	/**
 	 * Updates users paste. You shoud set the iPastePaste id otherwise it will
@@ -80,7 +84,7 @@ public interface IPasteCore extends IPasteConstants {
 	 * @param tmpKey
 	 * @return
 	 */
-	public String update(Paste paste, String tmpKey);
+	public int update(Paste paste, String tmpKey);
 
 	/**
 	 * Inserts a new paste.
@@ -94,7 +98,7 @@ public interface IPasteCore extends IPasteConstants {
 	 * @return mixed paste ID of the new paste or an KO with the error
 	 *         description
 	 */
-	public String paste(Paste paste);
+	public int paste(Paste paste);
 
 	/**
 	 * Inserts a new paste.
@@ -103,7 +107,7 @@ public interface IPasteCore extends IPasteConstants {
 	 * @param tmpKey
 	 * @return
 	 */
-	public String paste(Paste paste, String tmpKey);
+	public int paste(Paste paste, String tmpKey);
 
 	/**
 	 * Remove a paste by passing it's paste ID. If you will try to remove an
@@ -117,7 +121,7 @@ public interface IPasteCore extends IPasteConstants {
 	 *            function.
 	 * @return mixed OK or an KO with the error description
 	 */
-	public String remove(int pasteId);
+	public boolean remove(int pasteId);
 
 	/**
 	 * Remove a paste by passing it's paste ID. If you will try to remove an
@@ -129,7 +133,7 @@ public interface IPasteCore extends IPasteConstants {
 	 * @param tmpKey
 	 * @return
 	 */
-	public String remove(int pasteId, ResponsePasteFormat format, String tmpKey);
+	public boolean remove(int pasteId, IPasteResponseFormatAdvanced format, String tmpKey);
 
 	/**
 	 * Retrieves paste
@@ -140,7 +144,7 @@ public interface IPasteCore extends IPasteConstants {
 	 * @param null $tmpKeys
 	 * @return mixed
 	 */
-	public String get(int pasteId);
+	public Paste get(int pasteId);
 
 	/**
 	 * Retrieves paste
@@ -150,5 +154,5 @@ public interface IPasteCore extends IPasteConstants {
 	 * @param tmpKeys
 	 * @return
 	 */
-	public String get(int pasteId, ResponsePasteFormat format, String tmpKeys);
+	public Paste get(int pasteId, IPasteResponseFormatAdvanced format, String tmpKeys);
 }
