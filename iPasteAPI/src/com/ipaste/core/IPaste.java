@@ -3,7 +3,7 @@ package com.ipaste.core;
 import java.util.List;
 
 import com.ipaste.paste.Paste;
-import com.ipaste.response.IPasteResponseFormatAdvanced;
+import com.ipaste.response.IPasteExtraResponseFormat;
 import com.ipaste.response.IPasteResponseFormat;
 
 public class IPaste implements IPasteCore {
@@ -69,7 +69,7 @@ public class IPaste implements IPasteCore {
 	}
 
 	@Override
-	public boolean remove(int pasteId, IPasteResponseFormatAdvanced format, String tmpKey) {
+	public boolean remove(int pasteId, IPasteExtraResponseFormat format, String tmpKey) {
 		// TODO Auto-generated method stub
 		return false;
 	}
@@ -81,7 +81,7 @@ public class IPaste implements IPasteCore {
 	}
 
 	@Override
-	public Paste get(int pasteId, IPasteResponseFormatAdvanced format, String tmpKeys) {
+	public Paste get(int pasteId, IPasteExtraResponseFormat format, String tmpKeys) {
 		// TODO Auto-generated method stub
 		return null;
 	}

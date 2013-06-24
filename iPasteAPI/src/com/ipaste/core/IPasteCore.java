@@ -4,7 +4,7 @@ import java.util.List;
 
 import com.ipaste.paste.Paste;
 import com.ipaste.response.IPasteResponseFormat;
-import com.ipaste.response.IPasteResponseFormatAdvanced;
+import com.ipaste.response.IPasteExtraResponseFormat;
 
 public interface IPasteCore extends IPasteConstants {
 	/**
@@ -133,7 +133,7 @@ public interface IPasteCore extends IPasteConstants {
 	 * @param tmpKey
 	 * @return
 	 */
-	public boolean remove(int pasteId, IPasteResponseFormatAdvanced format, String tmpKey);
+	public boolean remove(int pasteId, IPasteExtraResponseFormat format, String tmpKey);
 
 	/**
 	 * Retrieves paste
@@ -154,5 +154,5 @@ public interface IPasteCore extends IPasteConstants {
 	 * @param tmpKeys
 	 * @return
 	 */
-	public Paste get(int pasteId, IPasteResponseFormatAdvanced format, String tmpKeys);
+	public Paste get(int pasteId, IPasteExtraResponseFormat format, String tmpKeys);
 }
