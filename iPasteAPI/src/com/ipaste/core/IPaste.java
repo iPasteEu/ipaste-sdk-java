@@ -39,15 +39,15 @@ public class IPaste implements IPasteCore {
 	}
 
 	@Override
-	public int update(Paste paste) {
+	public boolean update(Paste paste) {
 		// TODO Auto-generated method stub
-		return 0;
+		return false;
 	}
 
 	@Override
-	public int update(Paste paste, String tmpKey) {
+	public boolean update(Paste paste, String tmpKey) {
 		// TODO Auto-generated method stub
-		return 0;
+		return false;
 	}
 
 	@Override

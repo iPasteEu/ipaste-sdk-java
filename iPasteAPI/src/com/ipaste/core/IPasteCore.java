@@ -74,7 +74,7 @@ public interface IPasteCore extends IPasteConstants {
 	 *            function.
 	 * @return mixed paste ID or an KO with the error description
 	 */
-	public int update(Paste paste);
+	public boolean update(Paste paste);
 
 	/**
 	 * Updates users paste. You shoud set the iPastePaste id otherwise it will
@@ -84,7 +84,7 @@ public interface IPasteCore extends IPasteConstants {
 	 * @param tmpKey
 	 * @return
 	 */
-	public int update(Paste paste, String tmpKey);
+	public boolean update(Paste paste, String tmpKey);
 
 	/**
 	 * Inserts a new paste.
