@@ -1,4 +1,4 @@
-package com.ipaste.core;
+package com.ipaste.paste;
 
 public interface PasteValidStatuses {
     public final static String LISTED = "listed";

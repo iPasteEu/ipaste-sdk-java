@@ -1,6 +1,8 @@
 package com.ipaste.core;
 
-public class IPaste implements IPasteCore{
+import com.ipaste.paste.Paste;
+
+public class IPaste implements IPasteCore {
 
 	@Override
 	public String login() {
@@ -57,7 +59,7 @@ public class IPaste implements IPasteCore{
 	}
 
 	@Override
-	public String remove(int pasteId, String tmpKey) {
+	public String remove(int pasteId, ResponsePasteFormat format, String tmpKey) {
 		// TODO Auto-generated method stub
 		return null;
 	}

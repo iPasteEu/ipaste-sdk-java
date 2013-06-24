@@ -1,4 +1,4 @@
-package com.ipaste.core;
+package com.ipaste.paste;
 
 public interface PasteValidSyntaxes {
 	 public final static String GADV_4CS = "4cs";

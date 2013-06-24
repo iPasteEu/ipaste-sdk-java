@@ -1,5 +1,7 @@
 package com.ipaste.core;
 
+import com.ipaste.paste.Paste;
+
 public interface IPasteCore extends IPasteConstants {
 	/**
 	 * Call first this function in order to be abble to make other types of
@@ -16,6 +18,15 @@ public interface IPasteCore extends IPasteConstants {
 	 */
 	public String login();
 
+	/**
+	 * Call first this function in order to be abble to make other types of
+	 * request.
+	 * 
+	 * @param devKey
+	 * @param username
+	 * @param password
+	 * @return
+	 */
 	public String login(String devKey, String username, String password);
 
 	/**
@@ -37,6 +48,14 @@ public interface IPasteCore extends IPasteConstants {
 	 */
 	public String getUserPastes();
 
+	/**
+	 * Retrieves users paste IDs formatted according to the input format value.
+	 * 
+	 * @param format
+	 * @param username
+	 * @param tmpKey
+	 * @return
+	 */
 	public String getUserPastes(PasteResponseListFormat format, String username, String tmpKey);
 
 	/**
@@ -53,6 +72,14 @@ public interface IPasteCore extends IPasteConstants {
 	 */
 	public String update(Paste paste);
 
+	/**
+	 * Updates users paste. You shoud set the iPastePaste id otherwise it will
+	 * return an KO.
+	 * 
+	 * @param paste
+	 * @param tmpKey
+	 * @return
+	 */
 	public String update(Paste paste, String tmpKey);
 
 	/**
@@ -69,6 +96,13 @@ public interface IPasteCore extends IPasteConstants {
 	 */
 	public String paste(Paste paste);
 
+	/**
+	 * Inserts a new paste.
+	 * 
+	 * @param paste
+	 * @param tmpKey
+	 * @return
+	 */
 	public String paste(Paste paste, String tmpKey);
 
 	/**
@@ -85,17 +119,36 @@ public interface IPasteCore extends IPasteConstants {
 	 */
 	public String remove(int pasteId);
 
-	public String remove(int pasteId, String tmpKey);
+	/**
+	 * Remove a paste by passing it's paste ID. If you will try to remove an
+	 * unexisting paste (for example by removing the same paste for many times),
+	 * it will return always OK as response.
+	 * 
+	 * @param pasteId
+	 * @param format
+	 * @param tmpKey
+	 * @return
+	 */
+	public String remove(int pasteId, ResponsePasteFormat format, String tmpKey);
 
 	/**
 	 * Retrieves paste
 	 * 
 	 * @param $pasteID
-	 * @param string $format
+	 * @param string
+	 *            $format
 	 * @param null $tmpKeys
 	 * @return mixed
 	 */
 	public String get(int pasteId);
 
+	/**
+	 * Retrieves paste
+	 * 
+	 * @param pasteId
+	 * @param format
+	 * @param tmpKeys
+	 * @return
+	 */
 	public String get(int pasteId, ResponsePasteFormat format, String tmpKeys);
 }

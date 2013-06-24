@@ -1,4 +1,4 @@
-package com.ipaste.core;
+package com.ipaste.exception;
 
 public class IPasteException extends Exception {
 

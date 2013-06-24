@@ -1,4 +1,4 @@
-package com.ipaste.core;
+package com.ipaste.paste;
 
 public interface PasteValidExpiryDates {
     /* Minutes */
