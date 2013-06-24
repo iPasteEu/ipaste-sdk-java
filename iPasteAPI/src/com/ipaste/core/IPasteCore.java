@@ -56,7 +56,7 @@ public interface IPasteCore extends IPasteConstants {
 	 * @param tmpKey
 	 * @return
 	 */
-	public String getUserPastes(PasteResponseListFormat format, String username, String tmpKey);
+	public String getUserPastes(ResponseFormat format, String username, String tmpKey);
 
 	/**
 	 * Updates users paste. You shoud set the iPastePaste id otherwise it will

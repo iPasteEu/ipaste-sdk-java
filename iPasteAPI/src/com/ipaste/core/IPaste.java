@@ -23,7 +23,7 @@ public class IPaste implements IPasteCore {
 	}
 
 	@Override
-	public String getUserPastes(PasteResponseListFormat format, String username, String tmpKey) {
+	public String getUserPastes(ResponseFormat format, String username, String tmpKey) {
 		// TODO Auto-generated method stub
 		return null;
 	}
