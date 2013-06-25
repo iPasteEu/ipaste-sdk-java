@@ -33,15 +33,15 @@ public class IPaste implements IPasteCore {
 		this.username = this.md5(username.toUpperCase());
 		this.password = this.md5(password);
 		this.reconnections = 0;
-
-		this.tmpKey = this.login();
+		// tries to login
+		this.login();
 	}
 
 	@Override
 	public String login() throws IPasteException {
 		this.reconnections = 0;
 		if (this.devKey == null || this.devKey.isEmpty() || this.username == null || this.username.isEmpty() || this.password == null || this.password.isEmpty())
-			throw new IPasteException(KO + " - invalid login data");
+			throw new IPasteException(KO + " - client exception - invalid login data");
 		String response = this.call("");
 		if (this.isErrorResponse(response))
 			throw new IPasteException(response);
