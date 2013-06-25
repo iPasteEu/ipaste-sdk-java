@@ -33,7 +33,6 @@ public class IPaste implements IPasteCore {
 	private String username;
 	private String password;
 	private String tmpKey;
-	private int reconnections;
 
 	private IPaste(String username, String password) throws IPasteException {
 		this.validateUsername(username);
@@ -41,7 +40,6 @@ public class IPaste implements IPasteCore {
 
 		this.username = this.md5(username.toUpperCase());
 		this.password = this.md5(password);
-		this.reconnections = 0;
 
 	}
 
@@ -59,7 +57,6 @@ public class IPaste implements IPasteCore {
 		this.validateTmpKey(this.tmpKey);
 		this.validateUsername(this.username);
 
-		this.reconnections = 0;
 		String response;
 		try {
 			response = this.call("act=login&a=" + URLEncoder.encode(this.tmpKey, "UTF-8") + URLEncoder.encode(this.username, "UTF-8") + URLEncoder.encode(this.password, "UTF-8"));
@@ -437,14 +434,6 @@ public class IPaste implements IPasteCore {
 
 	public void setTmpKey(String tmpKey) {
 		this.tmpKey = tmpKey;
-	}
-
-	public int getReconnections() {
-		return reconnections;
-	}
-
-	public void setReconnections(int reconnections) {
-		this.reconnections = reconnections;
 	}
 
 }
