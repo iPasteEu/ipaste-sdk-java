@@ -1,6 +1,13 @@
 package com.ipaste.core;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.List;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import com.ipaste.paste.Paste;
 import com.ipaste.response.IPasteExtraResponseFormat;
@@ -13,6 +20,17 @@ public class IPaste implements IPasteCore {
 	private String password;
 	private String tmpKey;
 	private int reconnections;
+
+	public IPaste() {
+	}
+
+	public IPaste(String devKey, String username, String password) {
+		super();
+		this.devKey = devKey;
+		this.username = username;
+		this.password = password;
+		this.tmpKey = this.login();
+	}
 
 	@Override
 	public String login() {
@@ -84,6 +102,35 @@ public class IPaste implements IPasteCore {
 	public Paste get(int pasteId, IPasteExtraResponseFormat format, String tmpKeys) {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	private <T> T call() {
+
+		T ret = null;
+		String str = "url";
+		try {
+			URL url = new URL(str);
+			URLConnection urlc = url.openConnection();
+			BufferedReader bfr = new BufferedReader(new InputStreamReader(urlc.getInputStream()));
+			String line;
+
+			String title, des;
+			while ((line = bfr.readLine()) != null) {
+				JSONArray jsa = new JSONArray(line);
+				for (int i = 0; i < jsa.length(); i++) {
+					JSONObject jo = (JSONObject) jsa.get(i);
+					title = jo.getString("deal_title"); // tag name
+														// "deal_title",will
+														// return value that we
+														// save in title string
+					des = jo.getString("deal_description");
+				}
+			}
+		} catch (Exception e) {
+		} finally {
+
+		}
+		return ret;
 	}
 
 	public String getDevKey() {
