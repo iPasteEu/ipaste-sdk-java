@@ -29,7 +29,7 @@ public class IPaste implements IPasteCore {
 	// put here your developer key if you want to use the IPaste(String
 	// username,
 	// String password) constructor
-	private final String DEV_KEY = null;
+	//private final String DEV_KEY = null;
 
 	private String devKey;
 	private String username;
@@ -37,34 +37,36 @@ public class IPaste implements IPasteCore {
 	private String tmpKey;
 	private int reconnections;
 
-	public IPaste(String username, String password) throws IPasteException {
+	private IPaste(String username, String password) throws IPasteException {
 		// you must assign a value to the DEV_KEY variable in order to be able
 		// to use this constructor
 		// otherwise use the other constructor
-		if (this.DEV_KEY == null)
-			throw new IPasteException(CLIENT_EXCEPTION + "invalid developer key, please assign a value to the DEV_KEY variable, otherwise use the other construct");
+		//if (this.DEV_KEY == null)
+			//throw new IPasteException(CLIENT_EXCEPTION + "invalid developer key, please assign a value to the DEV_KEY variable, otherwise use the other construct");
+		this.validateUsername(username);
+		this.validateRawPassword(password);
+
 		this.username = this.md5(username.toUpperCase());
 		this.password = this.md5(password);
 		this.reconnections = 0;
-		// tries to login
-		this.login();
+
 	}
 
 	public IPaste(String devKey, String username, String password) throws IPasteException {
-		super();
+		this(username, password);
+		this.validateTmpKey(tmpKey);
 		this.devKey = devKey;
-		this.username = this.md5(username.toUpperCase());
-		this.password = this.md5(password);
-		this.reconnections = 0;
 		// tries to login
 		this.login();
 	}
 
 	@Override
 	public String login() throws IPasteException {
+		this.validateHashedPassword(this.password);
+		this.validateTmpKey(this.tmpKey);
+		this.validateUsername(this.username);
+
 		this.reconnections = 0;
-		if (!this.isEmpty(this.tmpKey) || !this.isEmpty(this.username) || !this.isEmpty(this.password))
-			throw new IPasteException(CLIENT_EXCEPTION + "invalid login data");
 		String response;
 		try {
 			response = this.call("act=login&a=" + URLEncoder.encode(this.tmpKey, "UTF-8") + URLEncoder.encode(this.username, "UTF-8") + URLEncoder.encode(this.password, "UTF-8"));
@@ -135,7 +137,7 @@ public class IPaste implements IPasteCore {
 
 	}
 
-	private boolean validateField(String field, Class cl) {
+	private boolean validateField(String field, Class<IPasteResponseFormat> cl) {
 		try {
 			cl.getField(field);
 		} catch (NoSuchFieldException | SecurityException e) {
@@ -267,8 +269,13 @@ public class IPaste implements IPasteCore {
 			throw new IPasteException(CLIENT_EXCEPTION + "invalid tmpKey: " + tmpKey);
 	}
 
-	private void validatePassword(String password) throws IPasteException {
+	private void validateHashedPassword(String hashedPassword) throws IPasteException {
 		if (this.isEmpty(password) || tmpKey.length() != 32)
+			throw new IPasteException(CLIENT_EXCEPTION + "invalid password: " + password);
+	}
+
+	private void validateRawPassword(String rawPassword) throws IPasteException {
+		if (this.isEmpty(password) || tmpKey.length() < 6 || tmpKey.length() > 32)
 			throw new IPasteException(CLIENT_EXCEPTION + "invalid password: " + password);
 	}
 
