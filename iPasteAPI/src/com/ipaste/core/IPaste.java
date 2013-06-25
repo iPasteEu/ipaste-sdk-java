@@ -1,14 +1,17 @@
 package com.ipaste.core;
 
 import java.io.BufferedReader;
+import java.io.DataOutputStream;
+import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
 import java.net.URL;
-import java.net.URLConnection;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.List;
+import java.util.StringTokenizer;
 
-import org.json.JSONArray;
-import org.json.JSONObject;
-
+import com.ipaste.exception.IPasteException;
 import com.ipaste.paste.Paste;
 import com.ipaste.response.IPasteExtraResponseFormat;
 import com.ipaste.response.IPasteResponseFormat;
@@ -24,24 +27,34 @@ public class IPaste implements IPasteCore {
 	public IPaste() {
 	}
 
-	public IPaste(String devKey, String username, String password) {
+	public IPaste(String devKey, String username, String password) throws IPasteException {
 		super();
 		this.devKey = devKey;
-		this.username = username;
-		this.password = password;
+		this.username = this.md5(username.toUpperCase());
+		this.password = this.md5(password);
+		this.reconnections = 0;
+
 		this.tmpKey = this.login();
 	}
 
 	@Override
-	public String login() {
-		// TODO Auto-generated method stub
-		return null;
+	public String login() throws IPasteException {
+		this.reconnections = 0;
+		if (this.devKey == null || this.devKey.isEmpty() || this.username == null || this.username.isEmpty() || this.password == null || this.password.isEmpty())
+			throw new IPasteException(KO + " - invalid login data");
+		String response = this.call("");
+		if (this.isErrorResponse(response))
+			throw new IPasteException(response);
+		this.tmpKey = response;
+		return response;
 	}
 
 	@Override
-	public String login(String devKey, String username, String password) {
-		// TODO Auto-generated method stub
-		return null;
+	public String login(String devKey, String username, String password) throws IPasteException {
+		this.devKey = devKey;
+		this.username = this.md5(username.toUpperCase());
+		this.password = this.md5(password);
+		return this.login();
 	}
 
 	@Override
@@ -104,24 +117,68 @@ public class IPaste implements IPasteCore {
 		return null;
 	}
 
-	private String call() {
+	private String call(String param) {
 
-		String ret = null;
-		String str = "url";
+		String uri = "http://www.ipaste.eu/api";
+		URL url;
+		HttpURLConnection connection = null;
 		try {
-			URL url = new URL(str);
-			URLConnection urlc = url.openConnection();
-			BufferedReader bfr = new BufferedReader(new InputStreamReader(urlc.getInputStream()));
-			String line;
-
-			while ((line = bfr.readLine()) != null) {
-				ret += line;
+			// Create connection
+			url = new URL(uri);
+			connection = (HttpURLConnection) url.openConnection();
+			connection.setRequestMethod("POST");
+			connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+			connection.setRequestProperty("Content-Length", "" + Integer.toString(param.getBytes().length));
+			connection.setRequestProperty("Content-Language", "en-US");
+			connection.setUseCaches(false);
+			connection.setDoInput(true);
+			connection.setDoOutput(true);
+			try (DataOutputStream wr = new DataOutputStream(connection.getOutputStream())) {
+				wr.writeBytes(param);
+				wr.flush();
 			}
-		} catch (Exception e) {
-		} finally {
+			InputStream is = connection.getInputStream();
+			StringBuilder response = null;
+			BufferedReader br = null;
+			try {
+				br = new BufferedReader(new InputStreamReader(is));
+				String line;
+				response = new StringBuilder();
+				while ((line = br.readLine()) != null) {
+					response.append(line);
+				}
+			} catch (Exception e) {
+			} finally {
+				if (br != null)
+					try {
+						br.close();
+					} catch (Exception e2) {
+					}
+			}
 
+			return response.toString();
+
+		} catch (Exception e) {
+			return null;
+		} finally {
+			if (connection != null) {
+				connection.disconnect();
+			}
 		}
-		return ret;
+	}
+
+	private String md5(String str) throws IPasteException {
+		try {
+			MessageDigest md5 = MessageDigest.getInstance("MD5");
+			return md5.digest(str.getBytes()).toString();
+		} catch (NoSuchAlgorithmException e) {
+			e.printStackTrace();
+			throw new IPasteException(e);
+		}
+	}
+
+	private boolean isErrorResponse(String response) {
+		return response.contains("-");
 	}
 
 	public String getDevKey() {
