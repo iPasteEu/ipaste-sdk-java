@@ -25,16 +25,10 @@ import com.ipaste.paste.PasteValidColors;
 import com.ipaste.paste.PasteValidExpiryDates;
 import com.ipaste.paste.PasteValidStatuses;
 import com.ipaste.paste.PasteValidSyntaxes;
-import com.ipaste.response.IPasteResponseFormat;
 import com.ipaste.response.IPasteExtraResponseFormat;
+import com.ipaste.response.IPasteResponseFormat;
 
 public class IPaste implements IPasteCore {
-
-	// put here your developer key if you want to use the IPaste(String
-	// username,
-	// String password) constructor
-	// private final String DEV_KEY = null;
-
 	private String devKey;
 	private String username;
 	private String password;
@@ -42,12 +36,6 @@ public class IPaste implements IPasteCore {
 	private int reconnections;
 
 	private IPaste(String username, String password) throws IPasteException {
-		// you must assign a value to the DEV_KEY variable in order to be able
-		// to use this constructor
-		// otherwise use the other constructor
-		// if (this.DEV_KEY == null)
-		// throw new IPasteException(CLIENT_EXCEPTION +
-		// "invalid developer key, please assign a value to the DEV_KEY variable, otherwise use the other construct");
 		this.validateUsername(username);
 		this.validateRawPassword(password);
 
@@ -123,27 +111,6 @@ public class IPaste implements IPasteCore {
 	public List<Integer> getUserPastes(String responseFormat, String tmpKey) throws IPasteException {
 		this.tmpKey = tmpKey;
 		return this.getUserPastes(responseFormat);
-	}
-
-	private List<Integer> jsonToIntegerList(String response) throws IPasteException {
-		List<Integer> list = null;
-		JSONParser parser = new JSONParser();
-		try {
-			Object obj = parser.parse(response);
-			JSONObject jsonObject = (JSONObject) obj;
-			list = new ArrayList<Integer>();
-			// loop array
-			JSONArray msg = (JSONArray) jsonObject.keySet();
-			@SuppressWarnings("unchecked")
-			// Using legacy API
-			Iterator<String> iterator = msg.iterator();
-			while (iterator.hasNext()) {
-				list.add(Integer.parseInt(iterator.next()));
-			}
-		} catch (ParseException e) {
-			throw new IPasteException(CLIENT_EXCEPTION + e);
-		}
-		return list;
 	}
 
 	@Override
@@ -407,12 +374,33 @@ public class IPaste implements IPasteCore {
 			throw new IPasteException(CLIENT_EXCEPTION + "invalid password: " + password);
 	}
 
-	private void validateField(String field, Class cl) throws IPasteException {
+	private void validateField(String field, Class<?> cl) throws IPasteException {
 		try {
 			cl.getField(field);
 		} catch (NoSuchFieldException | SecurityException e) {
 			throw new IPasteException(CLIENT_EXCEPTION + "invalid input");
 		}
+	}
+
+	private List<Integer> jsonToIntegerList(String response) throws IPasteException {
+		List<Integer> list = null;
+		JSONParser parser = new JSONParser();
+		try {
+			Object obj = parser.parse(response);
+			JSONObject jsonObject = (JSONObject) obj;
+			list = new ArrayList<Integer>();
+			// loop array
+			JSONArray msg = (JSONArray) jsonObject.keySet();
+			@SuppressWarnings("unchecked")
+			// Using legacy API
+			Iterator<String> iterator = msg.iterator();
+			while (iterator.hasNext()) {
+				list.add(Integer.parseInt(iterator.next()));
+			}
+		} catch (ParseException e) {
+			throw new IPasteException(CLIENT_EXCEPTION + e);
+		}
+		return list;
 	}
 
 	private boolean isErrorResponse(String response) {
