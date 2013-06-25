@@ -52,8 +52,9 @@ public interface IPasteCore extends IPasteConstants {
 	 *            function.
 	 * @return mixed textual or JSON list (according to the input format) of
 	 *         users pastes or an KO with the error description
+	 * @throws IPasteException 
 	 */
-	public List<Integer> getUserPastes();
+	public List<Integer> getUserPastes() throws IPasteException;
 
 	/**
 	 * Retrieves users paste IDs formatted according to the input format value.

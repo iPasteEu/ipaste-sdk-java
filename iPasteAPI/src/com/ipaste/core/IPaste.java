@@ -4,11 +4,20 @@ import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 
 import com.ipaste.exception.IPasteException;
 import com.ipaste.paste.Paste;
@@ -17,7 +26,8 @@ import com.ipaste.response.IPasteResponseFormat;
 
 public class IPaste implements IPasteCore {
 
-	// put here your developer key if you want to use the IPaste(String username,
+	// put here your developer key if you want to use the IPaste(String
+	// username,
 	// String password) constructor
 	private final String DEV_KEY = null;
 
@@ -28,6 +38,9 @@ public class IPaste implements IPasteCore {
 	private int reconnections;
 
 	public IPaste(String username, String password) throws IPasteException {
+		// you must assign a value to the DEV_KEY variable in order to be abble
+		// to use this constructor
+		// otherwise use the other constructor
 		if (this.DEV_KEY == null)
 			throw new IPasteException(CLIENT_EXCEPTION + "invalid developer key, please assign a value to the DEV_KEY variable, otherwise use the other construct");
 		this.username = this.md5(username.toUpperCase());
@@ -50,9 +63,14 @@ public class IPaste implements IPasteCore {
 	@Override
 	public String login() throws IPasteException {
 		this.reconnections = 0;
-		if (this.devKey == null || this.devKey.isEmpty() || this.username == null || this.username.isEmpty() || this.password == null || this.password.isEmpty())
+		if (!this.isEmpty(this.tmpKey) || !this.isEmpty(this.username) || !this.isEmpty(this.password))
 			throw new IPasteException(CLIENT_EXCEPTION + "invalid login data");
-		String response = this.call("");
+		String response;
+		try {
+			response = this.call("act=login&a=" + URLEncoder.encode(this.tmpKey, "UTF-8") + URLEncoder.encode(this.username, "UTF-8") + URLEncoder.encode(this.password, "UTF-8"));
+		} catch (UnsupportedEncodingException e) {
+			throw new IPasteException(CLIENT_EXCEPTION + "internal error");
+		}
 		if (this.isErrorResponse(response))
 			throw new IPasteException(response);
 		this.tmpKey = response;
@@ -68,15 +86,50 @@ public class IPaste implements IPasteCore {
 	}
 
 	@Override
-	public List<Integer> getUserPastes() {
-		// TODO Auto-generated method stub
-		return null;
+	public List<Integer> getUserPastes() throws IPasteException {
+		List<Integer> list = null;
+		if (this.isEmpty(this.tmpKey))
+			throw new IPasteException(CLIENT_EXCEPTION + "invalid tmpKey");
+		String response = this.call("act=get_all_user_pastes&frm=" + IPasteResponseFormat.JSON + "&a=" + this.tmpKey);
+
+		JSONParser parser = new JSONParser();
+
+		try {
+
+			Object obj = parser.parse(response);
+
+			JSONObject jsonObject = (JSONObject) obj;
+
+			list = new ArrayList<Integer>();
+
+			// loop array
+			JSONArray msg = (JSONArray) jsonObject.keySet();
+			@SuppressWarnings("unchecked")//Using legacy API
+			Iterator<String> iterator = msg.iterator();
+			while (iterator.hasNext()) {
+				list.add(Integer.parseInt(iterator.next()));
+			}
+
+		} catch (ParseException e) {
+			throw new IPasteException(CLIENT_EXCEPTION + e);
+		}
+
+		return list;
 	}
 
 	@Override
 	public List<Integer> getUserPastes(IPasteResponseFormat format, String username, String tmpKey) {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	private boolean validateField(String field, Class cl) {
+		try {
+			cl.getField(field);
+		} catch (NoSuchFieldException | SecurityException e) {
+			return false;
+		}
+		return true;
 	}
 
 	@Override
@@ -127,7 +180,7 @@ public class IPaste implements IPasteCore {
 		return null;
 	}
 
-	private String call(String param) {
+	private String call(String param) throws IPasteException {
 
 		String uri = "http://www.ipaste.eu/api";
 		URL url;
@@ -143,7 +196,7 @@ public class IPaste implements IPasteCore {
 			connection.setUseCaches(false);
 			connection.setDoInput(true);
 			connection.setDoOutput(true);
-			try (DataOutputStream wr = new DataOutputStream(connection.getOutputStream())) {
+			try (DataOutputStream wr = new DataOutputStream(connection.getOutputStream());) {
 				wr.writeBytes(param);
 				wr.flush();
 			}
@@ -158,18 +211,19 @@ public class IPaste implements IPasteCore {
 					response.append(line);
 				}
 			} catch (Exception e) {
+				throw new IPasteException(CLIENT_EXCEPTION + e);
 			} finally {
 				if (br != null)
 					try {
 						br.close();
 					} catch (Exception e2) {
+						throw new IPasteException(CLIENT_EXCEPTION + e2);
 					}
 			}
-
 			return response.toString();
 
 		} catch (Exception e) {
-			return null;
+			throw new IPasteException(CLIENT_EXCEPTION + e);
 		} finally {
 			if (connection != null) {
 				connection.disconnect();
@@ -185,6 +239,10 @@ public class IPaste implements IPasteCore {
 			e.printStackTrace();
 			throw new IPasteException(e);
 		}
+	}
+
+	private boolean isEmpty(String str) {
+		return (str == null || str.isEmpty());
 	}
 
 	private boolean isErrorResponse(String response) {
