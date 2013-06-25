@@ -29,7 +29,7 @@ public class IPaste implements IPasteCore {
 	// put here your developer key if you want to use the IPaste(String
 	// username,
 	// String password) constructor
-	//private final String DEV_KEY = null;
+	// private final String DEV_KEY = null;
 
 	private String devKey;
 	private String username;
@@ -41,8 +41,9 @@ public class IPaste implements IPasteCore {
 		// you must assign a value to the DEV_KEY variable in order to be able
 		// to use this constructor
 		// otherwise use the other constructor
-		//if (this.DEV_KEY == null)
-			//throw new IPasteException(CLIENT_EXCEPTION + "invalid developer key, please assign a value to the DEV_KEY variable, otherwise use the other construct");
+		// if (this.DEV_KEY == null)
+		// throw new IPasteException(CLIENT_EXCEPTION +
+		// "invalid developer key, please assign a value to the DEV_KEY variable, otherwise use the other construct");
 		this.validateUsername(username);
 		this.validateRawPassword(password);
 
@@ -81,6 +82,10 @@ public class IPaste implements IPasteCore {
 
 	@Override
 	public String login(String devKey, String username, String password) throws IPasteException {
+		this.validateEmpty(tmpKey);
+		this.validateEmpty(username);
+		this.validateEmpty(password);
+
 		this.devKey = devKey;
 		this.username = this.md5(username.toUpperCase());
 		this.password = this.md5(password);
@@ -90,8 +95,7 @@ public class IPaste implements IPasteCore {
 	@Override
 	public List<Integer> getUserPastes() throws IPasteException {
 		List<Integer> list = null;
-		if (this.isEmpty(this.tmpKey))
-			throw new IPasteException(CLIENT_EXCEPTION + "invalid tmpKey");
+		this.validateTmpKey(this.tmpKey);
 		String response = this.call("act=get_all_user_pastes&frm=" + IPasteResponseFormat.JSON + "&a=" + this.tmpKey);
 
 		JSONParser parser = new JSONParser();
@@ -121,29 +125,25 @@ public class IPaste implements IPasteCore {
 	}
 
 	public List<Integer> getUserPastes(String format, String username) throws IPasteException {
-		if (!this.validateField(format, IPasteResponseFormat.class))
-			throw new IPasteException(CLIENT_EXCEPTION + "invalid response format: " + format);
-		if (this.isEmpty(username) || username.length() > 32)
-			throw new IPasteException(CLIENT_EXCEPTION + "invalid username: " + username);
+		this.validateField(format, IPasteResponseFormat.class);
+		this.validateUsername(username);
 		return this.getUserPastes();
 	}
 
 	@Override
 	public List<Integer> getUserPastes(String format, String username, String tmpKey) throws IPasteException {
-		if (this.isEmpty(tmpKey))
-			throw new IPasteException(CLIENT_EXCEPTION + "invalid tmpKey: " + tmpKey);
+		this.validateTmpKey(tmpKey);
 		this.tmpKey = tmpKey;
 		return this.getUserPastes(format, username);
 
 	}
 
-	private boolean validateField(String field, Class<IPasteResponseFormat> cl) {
+	private void validateField(String field, Class<IPasteResponseFormat> cl) {
 		try {
 			cl.getField(field);
 		} catch (NoSuchFieldException | SecurityException e) {
-			return false;
+			throw new IPasteException(CLIENT_EXCEPTION + "invalid input");
 		}
-		return true;
 	}
 
 	@Override
@@ -257,6 +257,11 @@ public class IPaste implements IPasteCore {
 
 	private boolean isEmpty(String str) {
 		return (str == null || str.isEmpty());
+	}
+
+	private void validateEmpty(String str) throws IPasteException {
+		if (this.isEmpty(str))
+			throw new IPasteException(CLIENT_EXCEPTION + "invalid input value");
 	}
 
 	private void validateUsername(String username) throws IPasteException {
