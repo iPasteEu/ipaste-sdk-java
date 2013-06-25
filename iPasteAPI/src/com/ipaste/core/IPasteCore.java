@@ -64,7 +64,7 @@ public interface IPasteCore extends IPasteConstants {
 	 * @return
 	 * @throws IPasteException 
 	 */
-	public List<Integer> getUserPastes(String format, String username, String tmpKey) throws IPasteException;
+	public List<Integer> getUserPastes(String format, String tmpKey) throws IPasteException;
 
 	/**
 	 * Updates users paste. You shoud set the iPastePaste id otherwise it will

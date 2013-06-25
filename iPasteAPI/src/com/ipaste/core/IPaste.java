@@ -97,17 +97,33 @@ public class IPaste implements IPasteCore {
 		List<Integer> list = null;
 		this.validateTmpKey(this.tmpKey);
 		String response = this.call("act=get_all_user_pastes&frm=" + IPasteResponseFormat.JSON + "&a=" + this.tmpKey);
+		if (!this.isErrorResponse(response))
+			list = this.jsonToIntegerList(response);
+		return list;
+	}
 
+	public List<Integer> getUserPastes(String responseFormat) throws IPasteException {
+		List<Integer> list = null;
+		this.validateTmpKey(this.tmpKey);
+		this.validateField(responseFormat, IPasteResponseFormat.class);
+		String response = this.call("act=get_all_user_pastes&frm=" + responseFormat + "&a=" + this.tmpKey);
+		if (!this.isErrorResponse(response))
+			list = this.jsonToIntegerList(response);
+		return list;
+	}
+
+	public List<Integer> getUserPastes(String responseFormat, String tmpKey) throws IPasteException {
+		this.tmpKey = tmpKey;
+		return this.getUserPastes(responseFormat);
+	}
+
+	private List<Integer> jsonToIntegerList(String response) throws IPasteException {
+		List<Integer> list = null;
 		JSONParser parser = new JSONParser();
-
 		try {
-
 			Object obj = parser.parse(response);
-
 			JSONObject jsonObject = (JSONObject) obj;
-
 			list = new ArrayList<Integer>();
-
 			// loop array
 			JSONArray msg = (JSONArray) jsonObject.keySet();
 			@SuppressWarnings("unchecked")
@@ -116,34 +132,10 @@ public class IPaste implements IPasteCore {
 			while (iterator.hasNext()) {
 				list.add(Integer.parseInt(iterator.next()));
 			}
-
 		} catch (ParseException e) {
 			throw new IPasteException(CLIENT_EXCEPTION + e);
 		}
-
 		return list;
-	}
-
-	public List<Integer> getUserPastes(String format, String username) throws IPasteException {
-		this.validateField(format, IPasteResponseFormat.class);
-		this.validateUsername(username);
-		return this.getUserPastes();
-	}
-
-	@Override
-	public List<Integer> getUserPastes(String format, String username, String tmpKey) throws IPasteException {
-		this.validateTmpKey(tmpKey);
-		this.tmpKey = tmpKey;
-		return this.getUserPastes(format, username);
-
-	}
-
-	private void validateField(String field, Class<IPasteResponseFormat> cl) {
-		try {
-			cl.getField(field);
-		} catch (NoSuchFieldException | SecurityException e) {
-			throw new IPasteException(CLIENT_EXCEPTION + "invalid input");
-		}
 	}
 
 	@Override
@@ -282,6 +274,14 @@ public class IPaste implements IPasteCore {
 	private void validateRawPassword(String rawPassword) throws IPasteException {
 		if (this.isEmpty(password) || tmpKey.length() < 6 || tmpKey.length() > 32)
 			throw new IPasteException(CLIENT_EXCEPTION + "invalid password: " + password);
+	}
+
+	private void validateField(String field, Class<IPasteResponseFormat> cl) throws IPasteException {
+		try {
+			cl.getField(field);
+		} catch (NoSuchFieldException | SecurityException e) {
+			throw new IPasteException(CLIENT_EXCEPTION + "invalid input");
+		}
 	}
 
 	private boolean isErrorResponse(String response) {
