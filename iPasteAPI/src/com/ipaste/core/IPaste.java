@@ -34,6 +34,10 @@ public class IPaste implements IPasteCore {
 	private String password;
 	private String tmpKey;
 
+	public IPaste(){
+		
+	}
+	
 	private IPaste(String username, String password) throws IPasteException {
 		this.validateUsername(username);
 		this.validateRawPassword(password);
