@@ -4,8 +4,8 @@ import java.util.List;
 
 import com.ipaste.exception.IPasteException;
 import com.ipaste.paste.Paste;
-import com.ipaste.response.IPasteResponseFormat;
 import com.ipaste.response.IPasteExtraResponseFormat;
+import com.ipaste.response.IPasteResponseFormat;
 
 public interface IPasteCore extends IPasteConstants {
 	/**

@@ -9,7 +9,6 @@ import java.net.URL;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.List;
-import java.util.StringTokenizer;
 
 import com.ipaste.exception.IPasteException;
 import com.ipaste.paste.Paste;
@@ -18,13 +17,24 @@ import com.ipaste.response.IPasteResponseFormat;
 
 public class IPaste implements IPasteCore {
 
+	// put here your developer key if you want to use the IPaste(String username,
+	// String password) constructor
+	private final String DEV_KEY = null;
+
 	private String devKey;
 	private String username;
 	private String password;
 	private String tmpKey;
 	private int reconnections;
 
-	public IPaste() {
+	public IPaste(String username, String password) throws IPasteException {
+		if (this.DEV_KEY == null)
+			throw new IPasteException(CLIENT_EXCEPTION + "invalid developer key, please assign a value to the DEV_KEY variable, otherwise use the other construct");
+		this.username = this.md5(username.toUpperCase());
+		this.password = this.md5(password);
+		this.reconnections = 0;
+		// tries to login
+		this.login();
 	}
 
 	public IPaste(String devKey, String username, String password) throws IPasteException {
@@ -41,7 +51,7 @@ public class IPaste implements IPasteCore {
 	public String login() throws IPasteException {
 		this.reconnections = 0;
 		if (this.devKey == null || this.devKey.isEmpty() || this.username == null || this.username.isEmpty() || this.password == null || this.password.isEmpty())
-			throw new IPasteException(KO + " - client exception - invalid login data");
+			throw new IPasteException(CLIENT_EXCEPTION + "invalid login data");
 		String response = this.call("");
 		if (this.isErrorResponse(response))
 			throw new IPasteException(response);
