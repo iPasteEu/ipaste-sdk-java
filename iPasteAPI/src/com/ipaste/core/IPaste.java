@@ -21,12 +21,12 @@ import org.json.simple.parser.ParseException;
 
 import com.ipaste.exception.IPasteException;
 import com.ipaste.paste.Paste;
-import com.ipaste.paste.PasteValidStatuses;
 import com.ipaste.paste.PasteValidColors;
 import com.ipaste.paste.PasteValidExpiryDates;
+import com.ipaste.paste.PasteValidStatuses;
 import com.ipaste.paste.PasteValidSyntaxes;
-import com.ipaste.response.IPasteExtraResponseFormat;
 import com.ipaste.response.IPasteResponseFormat;
+import com.ipaste.response.IPasteExtraResponseFormat;
 
 public class IPaste implements IPasteCore {
 
@@ -163,53 +163,119 @@ public class IPaste implements IPasteCore {
 			e.printStackTrace();
 			throw new IPasteException(CLIENT_EXCEPTION + e);
 		}
-		
+
 		if (this.isErrorResponse(response))
 			throw new IPasteException(response);
-		
+
 		return true;
 	}
 
 	@Override
-	public boolean update(Paste paste, String tmpKey) {
-		// TODO Auto-generated method stub
-		return false;
+	public boolean update(Paste paste, String tmpKey) throws IPasteException {
+		this.tmpKey = tmpKey;
+		return this.update(paste);
 	}
 
 	@Override
-	public int paste(Paste paste) {
-		// TODO Auto-generated method stub
-		return 0;
+	public int paste(Paste paste) throws IPasteException {
+		int ret = -1;
+		paste = paste.clone();
+		this.validateTmpKey(this.tmpKey);
+		this.validatePasteBeforeInsert(paste);
+		String response;
+		try {
+			response = this.call("act=insert" + "&a=" + URLEncoder.encode(this.tmpKey, "UTF-8") + "&pasteTitle=" + URLEncoder.encode("" + paste.getTitle(), "UTF-8") + "&pasteDescription="
+					+ URLEncoder.encode("" + paste.getDescription(), "UTF-8") + "&pasteContent=" + URLEncoder.encode("" + paste.getContent(), "UTF-8") + "&pasteStatus="
+					+ URLEncoder.encode("" + paste.getStatus(), "UTF-8") + "&c=" + URLEncoder.encode("" + paste.getPassword(), "UTF-8") + "&pasteSource="
+					+ URLEncoder.encode("" + paste.getSource(), "UTF-8") + "&pasteTags=" + URLEncoder.encode("" + paste.getTags(), "UTF-8") + "&pasteExpiryDate="
+					+ URLEncoder.encode("" + paste.getExpiryDate(), "UTF-8") + "&pasteSyntax=" + URLEncoder.encode("" + paste.getSyntax(), "UTF-8") + "&pasteColor="
+					+ URLEncoder.encode("" + paste.getColor(), "UTF-8"));
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+			throw new IPasteException(CLIENT_EXCEPTION + e);
+		}
+
+		if (this.isErrorResponse(response))
+			throw new IPasteException(response);
+
+		try {
+			ret = Integer.parseInt(response);
+		} catch (NumberFormatException e) {
+			throw new IPasteException(CLIENT_EXCEPTION + "invalid paste id: " + e);
+		}
+
+		return ret;
 	}
 
 	@Override
-	public int paste(Paste paste, String tmpKey) {
-		// TODO Auto-generated method stub
-		return 0;
+	public int paste(Paste paste, String tmpKey) throws IPasteException {
+		this.tmpKey = tmpKey;
+		return this.paste(paste);
 	}
 
 	@Override
-	public boolean remove(int pasteId) {
-		// TODO Auto-generated method stub
-		return false;
+	public boolean remove(int pasteId) throws IPasteException {
+		this.validateTmpKey(this.tmpKey);
+		if (pasteId == 0)
+			throw new IPasteException(CLIENT_EXCEPTION + "invalid paste id");
+		String response = null;
+		try {
+			response = this.call("act=remove" + "&a=" + URLEncoder.encode(this.tmpKey, "UTF-8") + "&id=" + URLEncoder.encode("" + pasteId, "UTF-8"));
+		} catch (UnsupportedEncodingException e) {
+			throw new IPasteException(CLIENT_EXCEPTION + e);
+		}
+		if (this.isErrorResponse(response))
+			throw new IPasteException(response);
+		return true;
 	}
 
 	@Override
-	public boolean remove(int pasteId, IPasteExtraResponseFormat format, String tmpKey) {
-		// TODO Auto-generated method stub
-		return false;
+	public boolean remove(int pasteId, String tmpKey) throws IPasteException {
+		this.tmpKey = tmpKey;
+		return this.remove(pasteId);
 	}
 
 	@Override
-	public Paste get(int pasteId) {
-		// TODO Auto-generated method stub
-		return null;
+	public String get(int pasteId) throws IPasteException {
+		this.validateTmpKey(this.tmpKey);
+		if (pasteId == 0)
+			throw new IPasteException(CLIENT_EXCEPTION + "invalid paste id");
+		String format = IPasteExtraResponseFormat.TEXT;
+		String response = null;
+
+		try {
+			response = this.call("act=get" + "&a=" + URLEncoder.encode(this.tmpKey, "UTF-8") + "&id=" + URLEncoder.encode("" + pasteId, "UTF-8") + "&frm=" + URLEncoder.encode(format, "UTF-8"));
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+			throw new IPasteException(CLIENT_EXCEPTION + e);
+		}
+		if (this.isErrorResponse(response))
+			throw new IPasteException(response);
+		return response;
 	}
 
 	@Override
-	public Paste get(int pasteId, IPasteExtraResponseFormat format, String tmpKeys) {
-		// TODO Auto-generated method stub
-		return null;
+	public String get(int pasteId, String format) throws IPasteException {
+		this.validateTmpKey(this.tmpKey);
+		if (pasteId == 0)
+			throw new IPasteException(CLIENT_EXCEPTION + "invalid paste id");
+		String response = null;
+
+		try {
+			response = this.call("act=get" + "&a=" + URLEncoder.encode(this.tmpKey, "UTF-8") + "&id=" + URLEncoder.encode("" + pasteId, "UTF-8") + "&frm=" + URLEncoder.encode(format, "UTF-8"));
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+			throw new IPasteException(CLIENT_EXCEPTION + e);
+		}
+		if (this.isErrorResponse(response))
+			throw new IPasteException(response);
+		return response;
+	}
+
+	@Override
+	public String get(int pasteId, String format, String tmpKey) throws IPasteException {
+		this.tmpKey = tmpKey;
+		return this.get(pasteId, format);
 	}
 
 	private void pastePreProcess(Paste paste) throws IPasteException {

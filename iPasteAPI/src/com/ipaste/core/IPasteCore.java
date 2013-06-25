@@ -4,7 +4,6 @@ import java.util.List;
 
 import com.ipaste.exception.IPasteException;
 import com.ipaste.paste.Paste;
-import com.ipaste.response.IPasteExtraResponseFormat;
 
 public interface IPasteCore extends IPasteConstants {
 	/**
@@ -88,8 +87,9 @@ public interface IPasteCore extends IPasteConstants {
 	 * @param paste
 	 * @param tmpKey
 	 * @return
+	 * @throws IPasteException 
 	 */
-	public boolean update(Paste paste, String tmpKey);
+	public boolean update(Paste paste, String tmpKey) throws IPasteException;
 
 	/**
 	 * Inserts a new paste.
@@ -102,8 +102,9 @@ public interface IPasteCore extends IPasteConstants {
 	 *            function.
 	 * @return mixed paste ID of the new paste or an KO with the error
 	 *         description
+	 * @throws IPasteException 
 	 */
-	public int paste(Paste paste);
+	public int paste(Paste paste) throws IPasteException;
 
 	/**
 	 * Inserts a new paste.
@@ -111,8 +112,9 @@ public interface IPasteCore extends IPasteConstants {
 	 * @param paste
 	 * @param tmpKey
 	 * @return
+	 * @throws IPasteException 
 	 */
-	public int paste(Paste paste, String tmpKey);
+	public int paste(Paste paste, String tmpKey) throws IPasteException;
 
 	/**
 	 * Remove a paste by passing it's paste ID. If you will try to remove an
@@ -125,8 +127,9 @@ public interface IPasteCore extends IPasteConstants {
 	 *            to null if you want to use the temporary key returned by login
 	 *            function.
 	 * @return mixed OK or an KO with the error description
+	 * @throws IPasteException 
 	 */
-	public boolean remove(int pasteId);
+	public boolean remove(int pasteId) throws IPasteException;
 
 	/**
 	 * Remove a paste by passing it's paste ID. If you will try to remove an
@@ -137,8 +140,9 @@ public interface IPasteCore extends IPasteConstants {
 	 * @param format
 	 * @param tmpKey
 	 * @return
+	 * @throws IPasteException 
 	 */
-	public boolean remove(int pasteId, IPasteExtraResponseFormat format, String tmpKey);
+	public boolean remove(int pasteId, String tmpKey) throws IPasteException;
 
 	/**
 	 * Retrieves paste
@@ -148,8 +152,9 @@ public interface IPasteCore extends IPasteConstants {
 	 *            $format
 	 * @param null $tmpKeys
 	 * @return mixed
+	 * @throws IPasteException 
 	 */
-	public Paste get(int pasteId);
+	public String get(int pasteId) throws IPasteException;
 
 	/**
 	 * Retrieves paste
@@ -159,5 +164,7 @@ public interface IPasteCore extends IPasteConstants {
 	 * @param tmpKeys
 	 * @return
 	 */
-	public Paste get(int pasteId, IPasteExtraResponseFormat format, String tmpKeys);
+	
+	public String get(int pasteId, String format) throws IPasteException;
+	public String get(int pasteId, String format, String tmpKey) throws IPasteException;
 }
