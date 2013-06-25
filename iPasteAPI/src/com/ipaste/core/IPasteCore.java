@@ -77,8 +77,9 @@ public interface IPasteCore extends IPasteConstants {
 	 *            to null if you want to use the temporary key returned by login
 	 *            function.
 	 * @return mixed paste ID or an KO with the error description
+	 * @throws IPasteException 
 	 */
-	public boolean update(Paste paste);
+	public boolean update(Paste paste) throws IPasteException;
 
 	/**
 	 * Updates users paste. You shoud set the iPastePaste id otherwise it will

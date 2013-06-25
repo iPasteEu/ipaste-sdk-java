@@ -21,6 +21,10 @@ import org.json.simple.parser.ParseException;
 
 import com.ipaste.exception.IPasteException;
 import com.ipaste.paste.Paste;
+import com.ipaste.paste.PasteValidStatuses;
+import com.ipaste.paste.PasteValidColors;
+import com.ipaste.paste.PasteValidExpiryDates;
+import com.ipaste.paste.PasteValidSyntaxes;
 import com.ipaste.response.IPasteExtraResponseFormat;
 import com.ipaste.response.IPasteResponseFormat;
 
@@ -139,8 +143,18 @@ public class IPaste implements IPasteCore {
 	}
 
 	@Override
-	public boolean update(Paste paste) {
-		// TODO Auto-generated method stub
+	public boolean update(Paste paste) throws IPasteException {
+		paste = paste.clone();
+		this.validateTmpKey(this.tmpKey);
+		this.validatePasteBeforeUpdate(paste);
+		try {
+			this.call("act=update"+
+			"&a="+URLEncoder.encode(this.tmpKey, "UTF-8")+
+			"&id="+URLEncoder.encode(""+paste.getId(),"UTF-8"));
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+			throw new IPasteException(CLIENT_EXCEPTION+e);
+		}
 		return false;
 	}
 
@@ -184,6 +198,45 @@ public class IPaste implements IPasteCore {
 	public Paste get(int pasteId, IPasteExtraResponseFormat format, String tmpKeys) {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	private void pastePreProcess(Paste paste) throws IPasteException {
+		paste.setPassword(this.md5(paste.getPassword()));
+	}
+
+	private void validatePasteBeforeUpdate(Paste paste) throws IPasteException {
+		this.validatePasteBeforeInsert(paste);
+		if (paste.getId() == 0)
+			throw new IPasteException(CLIENT_EXCEPTION + "invalid paste id");
+	}
+
+	// private boolean isNumeric(String str){
+	// try{
+	// Integer.parseInt(str);
+	// return true;
+	// }catch(NumberFormatException e){
+	// return false;
+	// }
+	// }
+
+	private void validatePasteBeforeInsert(Paste paste) throws IPasteException {
+		this.pastePreProcess(paste);
+		if (paste.getTitle() == null || paste.getTitle().length() > 500)
+			throw new IPasteException(CLIENT_EXCEPTION + "invalid paste title");
+		if (paste.getContent() == null || paste.getContent().length() > 16777215)
+			throw new IPasteException(CLIENT_EXCEPTION + "invalid paste content");
+		if (paste.getPassword() == null || paste.getPassword().length() != 32)
+			throw new IPasteException(CLIENT_EXCEPTION + "invalid paste password");
+		if (paste.getSource() == null || paste.getSource().length() > 500)
+			throw new IPasteException(CLIENT_EXCEPTION + "invalid paste source");
+		if (paste.getTags() == null || paste.getTags().length() > 10000)
+			throw new IPasteException(CLIENT_EXCEPTION + "invalid paste tags");
+		if (paste.getDescription() == null || paste.getDescription().length() > 5000)
+			throw new IPasteException(CLIENT_EXCEPTION + "invalid paste description");
+		this.validateField(paste.getStatus(), PasteValidStatuses.class);
+		this.validateField(paste.getExpiryDate(), PasteValidExpiryDates.class);
+		this.validateField(paste.getSyntax(), PasteValidSyntaxes.class);
+		this.validateField(paste.getColor(), PasteValidColors.class);
 	}
 
 	private String call(String param) throws IPasteException {
@@ -276,7 +329,7 @@ public class IPaste implements IPasteCore {
 			throw new IPasteException(CLIENT_EXCEPTION + "invalid password: " + password);
 	}
 
-	private void validateField(String field, Class<IPasteResponseFormat> cl) throws IPasteException {
+	private void validateField(String field, Class cl) throws IPasteException {
 		try {
 			cl.getField(field);
 		} catch (NoSuchFieldException | SecurityException e) {

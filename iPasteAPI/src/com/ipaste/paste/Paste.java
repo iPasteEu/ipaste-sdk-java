@@ -1,20 +1,22 @@
 package com.ipaste.paste;
 
-public class Paste {
+
+public class Paste implements Cloneable {
 	private int id;
 	private String title;
 	private String description;
 	private String content;
-	private PasteValidStatuses status;
+	private String status;
 	private String password;
 	private String source;
 	private String tags;
-	private PasteValidExpiryDates expiryDate;
-	private PasteValidSyntaxes syntax;
-	private PasteValidColors color;
+	private String expiryDate;
+	private String syntax;
+	private String color;
 
-	public Paste(int id, String title, String description, String content, PasteValidStatuses status, String password, String source, String tags, PasteValidExpiryDates expiryDate,
-			PasteValidSyntaxes syntax, PasteValidColors color) {
+	
+
+	public Paste(int id, String title, String description, String content, String status, String password, String source, String tags, String expiryDate, String syntax, String color) {
 		super();
 		this.id = id;
 		this.title = title;
@@ -61,11 +63,11 @@ public class Paste {
 		this.content = content;
 	}
 
-	public PasteValidStatuses getStatus() {
+	public String getStatus() {
 		return status;
 	}
 
-	public void setStatus(PasteValidStatuses status) {
+	public void setStatus(String status) {
 		this.status = status;
 	}
 
@@ -93,28 +95,37 @@ public class Paste {
 		this.tags = tags;
 	}
 
-	public PasteValidExpiryDates getExpiryDate() {
+	public String getExpiryDate() {
 		return expiryDate;
 	}
 
-	public void setExpiryDate(PasteValidExpiryDates expiryDate) {
+	public void setExpiryDate(String expiryDate) {
 		this.expiryDate = expiryDate;
 	}
 
-	public PasteValidSyntaxes getSyntax() {
+	public String getSyntax() {
 		return syntax;
 	}
 
-	public void setSyntax(PasteValidSyntaxes syntax) {
+	public void setSyntax(String syntax) {
 		this.syntax = syntax;
 	}
 
-	public PasteValidColors getColor() {
+	public String getColor() {
 		return color;
 	}
 
-	public void setColor(PasteValidColors color) {
+	public void setColor(String color) {
 		this.color = color;
+	}
+
+	public Paste clone() {
+		try {
+			return (Paste) super.clone();
+		} catch (CloneNotSupportedException e) {
+			e.printStackTrace();
+		}
+		return null;
 	}
 
 	@Override
