@@ -5,7 +5,6 @@ import java.util.List;
 import com.ipaste.exception.IPasteException;
 import com.ipaste.paste.Paste;
 import com.ipaste.response.IPasteExtraResponseFormat;
-import com.ipaste.response.IPasteResponseFormat;
 
 public interface IPasteCore extends IPasteConstants {
 	/**
@@ -63,8 +62,9 @@ public interface IPasteCore extends IPasteConstants {
 	 * @param username
 	 * @param tmpKey
 	 * @return
+	 * @throws IPasteException 
 	 */
-	public List<Integer> getUserPastes(IPasteResponseFormat format, String username, String tmpKey);
+	public List<Integer> getUserPastes(String format, String username, String tmpKey) throws IPasteException;
 
 	/**
 	 * Updates users paste. You shoud set the iPastePaste id otherwise it will

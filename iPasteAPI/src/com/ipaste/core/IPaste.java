@@ -38,7 +38,7 @@ public class IPaste implements IPasteCore {
 	private int reconnections;
 
 	public IPaste(String username, String password) throws IPasteException {
-		// you must assign a value to the DEV_KEY variable in order to be abble
+		// you must assign a value to the DEV_KEY variable in order to be able
 		// to use this constructor
 		// otherwise use the other constructor
 		if (this.DEV_KEY == null)
@@ -104,7 +104,8 @@ public class IPaste implements IPasteCore {
 
 			// loop array
 			JSONArray msg = (JSONArray) jsonObject.keySet();
-			@SuppressWarnings("unchecked")//Using legacy API
+			@SuppressWarnings("unchecked")
+			// Using legacy API
 			Iterator<String> iterator = msg.iterator();
 			while (iterator.hasNext()) {
 				list.add(Integer.parseInt(iterator.next()));
@@ -117,10 +118,21 @@ public class IPaste implements IPasteCore {
 		return list;
 	}
 
+	public List<Integer> getUserPastes(String format, String username) throws IPasteException {
+		if (!this.validateField(format, IPasteResponseFormat.class))
+			throw new IPasteException(CLIENT_EXCEPTION + "invalid response format: " + format);
+		if (this.isEmpty(username) || username.length() > 32)
+			throw new IPasteException(CLIENT_EXCEPTION + "invalid username: " + username);
+		return this.getUserPastes();
+	}
+
 	@Override
-	public List<Integer> getUserPastes(IPasteResponseFormat format, String username, String tmpKey) {
-		// TODO Auto-generated method stub
-		return null;
+	public List<Integer> getUserPastes(String format, String username, String tmpKey) throws IPasteException {
+		if (this.isEmpty(tmpKey))
+			throw new IPasteException(CLIENT_EXCEPTION + "invalid tmpKey: " + tmpKey);
+		this.tmpKey = tmpKey;
+		return this.getUserPastes(format, username);
+
 	}
 
 	private boolean validateField(String field, Class cl) {
@@ -243,6 +255,21 @@ public class IPaste implements IPasteCore {
 
 	private boolean isEmpty(String str) {
 		return (str == null || str.isEmpty());
+	}
+
+	private void validateUsername(String username) throws IPasteException {
+		if (this.isEmpty(username) || username.length() > 32)
+			throw new IPasteException(CLIENT_EXCEPTION + "invalid username: " + username);
+	}
+
+	private void validateTmpKey(String tmpKey) throws IPasteException {
+		if (this.isEmpty(tmpKey) || tmpKey.length() < 20 || tmpKey.length() > 40)
+			throw new IPasteException(CLIENT_EXCEPTION + "invalid tmpKey: " + tmpKey);
+	}
+
+	private void validatePassword(String password) throws IPasteException {
+		if (this.isEmpty(password) || tmpKey.length() != 32)
+			throw new IPasteException(CLIENT_EXCEPTION + "invalid password: " + password);
 	}
 
 	private boolean isErrorResponse(String response) {
