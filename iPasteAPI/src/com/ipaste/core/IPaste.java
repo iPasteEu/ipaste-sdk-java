@@ -104,9 +104,9 @@ public class IPaste implements IPasteCore {
 		return null;
 	}
 
-	private <T> T call() {
+	private String call() {
 
-		T ret = null;
+		String ret = null;
 		String str = "url";
 		try {
 			URL url = new URL(str);
@@ -114,17 +114,8 @@ public class IPaste implements IPasteCore {
 			BufferedReader bfr = new BufferedReader(new InputStreamReader(urlc.getInputStream()));
 			String line;
 
-			String title, des;
 			while ((line = bfr.readLine()) != null) {
-				JSONArray jsa = new JSONArray(line);
-				for (int i = 0; i < jsa.length(); i++) {
-					JSONObject jo = (JSONObject) jsa.get(i);
-					title = jo.getString("deal_title"); // tag name
-														// "deal_title",will
-														// return value that we
-														// save in title string
-					des = jo.getString("deal_description");
-				}
+				ret += line;
 			}
 		} catch (Exception e) {
 		} finally {
