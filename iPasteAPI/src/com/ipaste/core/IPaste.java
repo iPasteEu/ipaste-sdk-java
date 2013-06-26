@@ -31,7 +31,10 @@ import com.ipaste.paste.PasteValidStatuses;
 import com.ipaste.paste.PasteValidSyntaxes;
 import com.ipaste.response.IPasteExtraResponseFormat;
 import com.ipaste.response.IPasteResponseFormat;
-
+/**
+ * iPaste.eu core class.
+ * Instantiate IPaste in order to be able to clall the iPaste webservice. 
+ */
 public class IPaste implements IPasteCore {
 	/**
 	 * initialize this variable if you want to use only the public IPaste(String
