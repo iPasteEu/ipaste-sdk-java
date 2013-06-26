@@ -8,6 +8,8 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.math.BigInteger;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -104,6 +106,7 @@ public class IPaste implements IPasteCore {
 
 	/**
 	 * validates login data and tries to login
+	 * 
 	 * @return String developer key
 	 * @throws IPasteException
 	 */
@@ -129,6 +132,7 @@ public class IPaste implements IPasteCore {
 
 	/**
 	 * tries to login using the login data passed as parameter
+	 * 
 	 * @param devKey
 	 * @param username
 	 * @param password
@@ -143,6 +147,12 @@ public class IPaste implements IPasteCore {
 		return this.login();
 	}
 
+	/**
+	 * Gets user pastes in JSON format and decodes them in a list of integers
+	 * 
+	 * @return List<Integer> list of user pastes
+	 * @throws IPasteException
+	 */
 	@Override
 	public List<Integer> getUserPastes() throws IPasteException {
 		List<Integer> list = null;
@@ -155,6 +165,15 @@ public class IPaste implements IPasteCore {
 		return list;
 	}
 
+	/**
+	 * Returns the users pastes according to the responseFormat as output and
+	 * converts them in a list of integers that will be returned
+	 * 
+	 * @param responseFormat
+	 * @return List<Integer> list of user pastes
+	 * @throws IPasteException
+	 */
+	@Override
 	public List<Integer> getUserPastes(String responseFormat) throws IPasteException {
 		List<Integer> list = null;
 		this.validateTmpKey(this.tmpKey);
@@ -170,6 +189,15 @@ public class IPaste implements IPasteCore {
 		return list;
 	}
 
+	/**
+	 * Returns the users paste IDs according to the responseFormat as output and
+	 * converts them in a list of integers that will be returned
+	 * 
+	 * @param responseFormat
+	 * @return List<Integer> list of user pastes
+	 * @throws IPasteException
+	 */
+	@Override
 	public List<Integer> getUserPastes(String responseFormat, String tmpKey) throws IPasteException {
 		this.tmpKey = tmpKey;
 		return this.getUserPastes(responseFormat);
@@ -193,6 +221,7 @@ public class IPaste implements IPasteCore {
 			throw new IPasteException(CLIENT_EXCEPTION + e);
 		}
 
+		
 		if (this.isErrorResponse(response))
 			throw new IPasteException(response);
 
@@ -228,7 +257,10 @@ public class IPaste implements IPasteCore {
 			throw new IPasteException(response);
 
 		try {
-			ret = Integer.parseInt(response);
+			// it returns 1234\r\n -> Integer.parseInt() does not recognize the
+			// new line characters and it throws an exception, so we remove the
+			// EOL with the trim() method
+			ret = Integer.parseInt(response.trim());
 		} catch (NumberFormatException e) {
 			throw new IPasteException(CLIENT_EXCEPTION + "invalid paste id: " + e);
 		}
@@ -249,7 +281,7 @@ public class IPaste implements IPasteCore {
 			throw new IPasteException(CLIENT_EXCEPTION + "invalid paste id");
 		String response = null;
 		try {
-			response = this.call("act=remove" + "&a=" + URLEncoder.encode(this.tmpKey, "UTF-8") + "&id=" + URLEncoder.encode("" + pasteId, "UTF-8"));
+			response = this.call("act=remove" + "&a=" + URLEncoder.encode(this.tmpKey, "UTF-8") + "&id=" + URLEncoder.encode("" + pasteId, "UTF-8")).trim();
 		} catch (UnsupportedEncodingException e) {
 			throw new IPasteException(CLIENT_EXCEPTION + e);
 		}
@@ -380,6 +412,7 @@ public class IPaste implements IPasteCore {
 				while ((linee = br.readLine()) != null) {
 					response.append(linee + "\r\n");
 				}
+				response.setLength(response.length() - 2);
 				br.close();
 			} catch (IOException e) {
 				throw new IPasteException(CLIENT_EXCEPTION + e);
@@ -457,8 +490,19 @@ public class IPaste implements IPasteCore {
 
 	private void validateField(String field, Class<?> cl) throws IPasteException {
 		try {
-			cl.getField(field.toUpperCase());
-		} catch (NoSuchFieldException | SecurityException e) {
+			boolean found = false;
+			for (Field f : cl.getDeclaredFields()) {
+				int mod = f.getModifiers();
+				if (Modifier.isStatic(mod) && Modifier.isPublic(mod) && Modifier.isFinal(mod)) {
+					if (f.get(null).equals(field)) {
+						found = true;
+					}
+				} else {
+				}
+			}
+			if (!found)
+				throw new IPasteException(field);
+		} catch (SecurityException | IllegalArgumentException | IllegalAccessException e) {
 			throw new IPasteException(CLIENT_EXCEPTION + "invalid input: " + e);
 		}
 	}
@@ -493,7 +537,7 @@ public class IPaste implements IPasteCore {
 	}
 
 	private boolean isErrorResponse(String response) {
-		return response.contains("-");
+		return response.startsWith("KO -");
 	}
 
 	public String getDevKey() {

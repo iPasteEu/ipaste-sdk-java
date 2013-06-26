@@ -15,6 +15,20 @@ public class Paste implements Cloneable {
 	private String color;
 
 	
+	
+	public Paste(String title, String description, String content, String status, String password, String source, String tags, String expiryDate, String syntax, String color) {
+		super();
+		this.title = title;
+		this.description = description;
+		this.content = content;
+		this.status = status;
+		this.password = password;
+		this.source = source;
+		this.tags = tags;
+		this.expiryDate = expiryDate;
+		this.syntax = syntax;
+		this.color = color;
+	}
 
 	public Paste(int id, String title, String description, String content, String status, String password, String source, String tags, String expiryDate, String syntax, String color) {
 		super();
