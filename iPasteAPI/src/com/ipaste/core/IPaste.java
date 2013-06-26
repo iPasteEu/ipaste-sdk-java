@@ -221,7 +221,6 @@ public class IPaste implements IPasteCore {
 			throw new IPasteException(CLIENT_EXCEPTION + e);
 		}
 
-		
 		if (this.isErrorResponse(response))
 			throw new IPasteException(response);
 

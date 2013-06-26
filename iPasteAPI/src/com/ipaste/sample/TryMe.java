@@ -11,6 +11,7 @@ import com.ipaste.response.IPasteExtraResponseFormat;
 import com.ipaste.response.IPasteResponseFormat;
 
 public class TryMe {
+	
 	private final static String DEV_KEY = "";
 	private final static String USERNAME = "";
 	private final static String PASSWORD = "";
