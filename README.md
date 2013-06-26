@@ -1,4 +1,4 @@
-ipaste-api-java ALPHA 
+iPaste API for Java Developers
 ===============
 ###Work in progress
 ###www.iPaste.eu
