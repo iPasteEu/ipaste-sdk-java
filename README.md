@@ -1,6 +1,6 @@
-iPaste API for Java Developers
+iPaste API for Java Developers ####v. 1.0 Beta
 ===============
-####v. 1.0 Beta
+
 ######www.iPaste.eu
 iPaste.eu is a pastebin-like site.
 
