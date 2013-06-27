@@ -25,15 +25,16 @@ import org.json.simple.JSONValue;
 
 import com.ipaste.exception.IPasteException;
 import com.ipaste.paste.Paste;
-import com.ipaste.paste.PasteValidColors;
+import com.ipaste.paste.PasteValidColours;
 import com.ipaste.paste.PasteValidExpiryDates;
 import com.ipaste.paste.PasteValidStatuses;
 import com.ipaste.paste.PasteValidSyntaxes;
 import com.ipaste.response.IPasteExtraResponseFormat;
 import com.ipaste.response.IPasteResponseFormat;
+
 /**
- * iPaste.eu core class.
- * Instantiate IPaste in order to be able to clall the iPaste webservice. 
+ * iPaste.eu core class. Instantiate IPaste in order to be able to clall the
+ * iPaste webservice.
  */
 public class IPaste implements IPasteCore {
 	/**
@@ -243,17 +244,40 @@ public class IPaste implements IPasteCore {
 		this.validateTmpKey(this.tmpKey);
 		this.validatePasteBeforeInsert(paste);
 		String response;
+		String query;
 		try {
-			response = this.call("act=insert" + "&a=" + URLEncoder.encode(this.tmpKey, "UTF-8") + "&pasteTitle=" + URLEncoder.encode("" + paste.getTitle(), "UTF-8") + "&pasteDescription="
-					+ URLEncoder.encode("" + paste.getDescription(), "UTF-8") + "&pasteContent=" + URLEncoder.encode("" + paste.getContent(), "UTF-8") + "&pasteStatus="
-					+ URLEncoder.encode("" + paste.getStatus(), "UTF-8") + "&c=" + URLEncoder.encode("" + paste.getPassword(), "UTF-8") + "&pasteSource="
-					+ URLEncoder.encode("" + paste.getSource(), "UTF-8") + "&pasteTags=" + URLEncoder.encode("" + paste.getTags(), "UTF-8") + "&pasteExpiryDate="
-					+ URLEncoder.encode("" + paste.getExpiryDate(), "UTF-8") + "&pasteSyntax=" + URLEncoder.encode("" + paste.getSyntax(), "UTF-8") + "&pasteColor="
-					+ URLEncoder.encode("" + paste.getColor(), "UTF-8"));
+			
+			query = "act=insert" + "&a=" + URLEncoder.encode(this.tmpKey, "UTF-8") + "&pasteTitle=" + URLEncoder.encode("" + paste.getTitle(), "UTF-8");
+			if (paste.getDescription() != null)
+				query += "&pasteDescription=" + URLEncoder.encode("" + paste.getDescription(), "UTF-8");
+
+			query += "&pasteContent=" + URLEncoder.encode("" + paste.getContent(), "UTF-8");
+
+			if (paste.getStatus() != null)
+				query += "&pasteStatus=" + URLEncoder.encode("" + paste.getStatus(), "UTF-8");
+
+			if (paste.getPassword() != null)
+				query += "&c=" + URLEncoder.encode("" + paste.getPassword(), "UTF-8");
+
+			if (paste.getSource() != null)
+				query += "&pasteSource=" + URLEncoder.encode("" + paste.getSource(), "UTF-8");
+
+			if (paste.getTags() != null)
+				query += "&pasteTags=" + URLEncoder.encode("" + paste.getTags(), "UTF-8");
+			if (paste.getExpiryDate() != null)
+				query += "&pasteExpiryDate=" + URLEncoder.encode("" + paste.getExpiryDate(), "UTF-8");
+
+			if (paste.getSyntax() != null)
+				query += "&pasteSyntax=" + URLEncoder.encode("" + paste.getSyntax(), "UTF-8");
+
+			if (paste.getColor() != null)
+				query += "&pasteColor=" + URLEncoder.encode("" + paste.getColor(), "UTF-8");
+			
 		} catch (UnsupportedEncodingException e) {
-			e.printStackTrace();
 			throw new IPasteException(CLIENT_EXCEPTION + e);
 		}
+
+		response = this.call(query);
 
 		if (this.isErrorResponse(response))
 			throw new IPasteException(response);
@@ -366,18 +390,18 @@ public class IPaste implements IPasteCore {
 			throw new IPasteException(CLIENT_EXCEPTION + "invalid paste title");
 		if (paste.getContent() == null || paste.getContent().length() > 16777215)
 			throw new IPasteException(CLIENT_EXCEPTION + "invalid paste content");
-		if (paste.getPassword() == null || paste.getPassword().length() != 32)
+		if (paste.getPassword() != null && paste.getPassword().length() != 32)
 			throw new IPasteException(CLIENT_EXCEPTION + "invalid paste password");
-		if (paste.getSource() == null || paste.getSource().length() > 500)
+		if (paste.getSource() != null && paste.getSource().length() > 500)
 			throw new IPasteException(CLIENT_EXCEPTION + "invalid paste source");
-		if (paste.getTags() == null || paste.getTags().length() > 10000)
+		if (paste.getTags() != null && paste.getTags().length() > 10000)
 			throw new IPasteException(CLIENT_EXCEPTION + "invalid paste tags");
-		if (paste.getDescription() == null || paste.getDescription().length() > 5000)
+		if (paste.getDescription() != null && paste.getDescription().length() > 5000)
 			throw new IPasteException(CLIENT_EXCEPTION + "invalid paste description");
 		this.validateField(paste.getStatus(), PasteValidStatuses.class);
 		this.validateField(paste.getExpiryDate(), PasteValidExpiryDates.class);
 		this.validateField(paste.getSyntax(), PasteValidSyntaxes.class);
-		this.validateField(paste.getColor(), PasteValidColors.class);
+		this.validateField(paste.getColor(), PasteValidColours.class);
 	}
 
 	private String call(String param) throws IPasteException {
@@ -403,7 +427,7 @@ public class IPaste implements IPasteCore {
 			writer.close();
 			os.close();
 			InputStream is = connection.getInputStream();
-
+			System.out.println(param);
 			StringBuilder response = null;
 			BufferedReader br = null;
 			try {
@@ -439,6 +463,8 @@ public class IPaste implements IPasteCore {
 	}
 
 	public String md5(String input) throws IPasteException {
+		if (input == null)
+			return null;
 		try {
 			MessageDigest md = MessageDigest.getInstance("MD5");
 			byte[] messageDigest = md.digest(input.getBytes());
@@ -491,6 +517,8 @@ public class IPaste implements IPasteCore {
 	}
 
 	private void validateField(String field, Class<?> cl) throws IPasteException {
+		if (field == null)
+			return;
 		try {
 			boolean found = false;
 			for (Field f : cl.getDeclaredFields()) {

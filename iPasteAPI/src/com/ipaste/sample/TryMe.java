@@ -1,9 +1,14 @@
 package com.ipaste.sample;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.util.Properties;
+
 import com.ipaste.core.IPaste;
 import com.ipaste.exception.IPasteException;
 import com.ipaste.paste.Paste;
-import com.ipaste.paste.PasteValidColors;
+import com.ipaste.paste.PasteValidColours;
 import com.ipaste.paste.PasteValidExpiryDates;
 import com.ipaste.paste.PasteValidStatuses;
 import com.ipaste.paste.PasteValidSyntaxes;
@@ -11,15 +16,25 @@ import com.ipaste.response.IPasteExtraResponseFormat;
 import com.ipaste.response.IPasteResponseFormat;
 
 public class TryMe {
-	
-	private final static String DEV_KEY = "";
-	private final static String USERNAME = "";
-	private final static String PASSWORD = "";
 
 	/**
 	 * @param args
 	 */
 	public static void main(String[] args) {
+
+		Properties prop = new Properties();
+
+		try {
+			prop.load(new FileInputStream(new File("C:\\test.properties")));
+
+		} catch (IOException ex) {
+			ex.printStackTrace();
+		}
+
+		String DEV_KEY = prop.getProperty("DEV_KEY");
+		String USERNAME = prop.getProperty("USERNAME");
+		String PASSWORD = prop.getProperty("PASSWORD");
+
 		IPaste ipaste = null;
 		try {
 			ipaste = new IPaste(DEV_KEY, USERNAME, PASSWORD);
@@ -44,8 +59,16 @@ public class TryMe {
 		}
 		int ret = -1;
 		try {
-			ret = ipaste.paste(new Paste("Title Title Title", "Description Description Description Description", "content content contentcontent content content content", PasteValidStatuses.HIDDEN,
-					"password password password", "https://www.ipaste.eu", "tags tags tags tagstags", PasteValidExpiryDates.ONE_HUNDRED_YEARS, PasteValidSyntaxes.TEXT, PasteValidColors.RED));
+			// ret = ipaste.paste(new Paste("Title Title Title",
+			// "Description Description Description Description",
+			// "content content contentcontent content content content",
+			// PasteValidStatuses.HIDDEN,
+			// "password password password", "https://www.ipaste.eu",
+			// "tags tags tags tagstags",
+			// PasteValidExpiryDates.ONE_HUNDRED_YEARS, PasteValidSyntaxes.TEXT,
+			// PasteValidColours.RED));
+			// System.out.println("paste(Paste paste) - Result:" + ret);
+			ret = ipaste.paste(new Paste("Title", "Description nDescription", "content ncontent"));
 			System.out.println("paste(Paste paste) - Result:" + ret);
 		} catch (IPasteException e) {
 			System.out.println(e);
@@ -92,11 +115,10 @@ public class TryMe {
 		}
 		try {
 
-			System.out
-					.println("update(Paste paste) - Result:"
-							+ ipaste.update(new Paste(3952, "BBBB Title Title", "BBBB Description Description Description", "BBBB content contentcontent content content content",
-									PasteValidStatuses.HIDDEN, "BBBB password password", "https://www.ipasteBBBB.eu", "BBBB tags tags tagstags", PasteValidExpiryDates.ONE_MONTH,
-									PasteValidSyntaxes.TERA_TERM_MACRO, PasteValidColors.RED)));
+			System.out.println("update(Paste paste) - Result:"
+					+ ipaste.update(new Paste(3952, "BBBB Title Title", "BBBB Description Description Description", "BBBB content contentcontent content content content", PasteValidStatuses.HIDDEN,
+							"BBBB password password", "https://www.ipasteBBBB.eu", "BBBB tags tags tagstags", PasteValidExpiryDates.ONE_MONTH, PasteValidSyntaxes.TERA_TERM_MACRO,
+							PasteValidColours.RED)));
 		} catch (IPasteException e) {
 			System.out.println(e);
 		}

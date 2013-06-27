@@ -1,6 +1,5 @@
 package com.ipaste.paste;
 
-
 public class Paste implements Cloneable {
 	private int id;
 	private String title;
@@ -14,8 +13,12 @@ public class Paste implements Cloneable {
 	private String syntax;
 	private String color;
 
-	
-	
+	public Paste(String title, String description, String content) {
+		this.title = title;
+		this.description = description;
+		this.content= content;
+	}
+
 	public Paste(String title, String description, String content, String status, String password, String source, String tags, String expiryDate, String syntax, String color) {
 		super();
 		this.title = title;
