@@ -1,7 +1,7 @@
 iPaste API for Java Developers 
 ===============
 ####v. 1.0 Beta
-######[iPaste.eu](http://www.iPaste.eu)
+######[Website](http://www.iPaste.eu)
 iPaste.eu is a pastebin-like site.
 
 Please read the [iPaste SDK] (http://www.ipaste.eu/doc/iPaste_SDK_1_0.pdf) for more informations.
