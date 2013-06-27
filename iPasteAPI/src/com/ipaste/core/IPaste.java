@@ -213,17 +213,41 @@ public class IPaste implements IPasteCore {
 		this.validateTmpKey(this.tmpKey);
 		this.validatePasteBeforeUpdate(paste);
 		String response;
+		String query;
 		try {
-			response = this.call("act=update" + "&a=" + URLEncoder.encode(this.tmpKey, "UTF-8") + "&id=" + URLEncoder.encode("" + paste.getId(), "UTF-8") + "&pasteTitle="
-					+ URLEncoder.encode("" + paste.getTitle(), "UTF-8") + "&pasteDescription=" + URLEncoder.encode("" + paste.getDescription(), "UTF-8") + "&pasteContent="
-					+ URLEncoder.encode("" + paste.getContent(), "UTF-8") + "&pasteStatus=" + URLEncoder.encode("" + paste.getStatus(), "UTF-8") + "&c="
-					+ URLEncoder.encode("" + paste.getPassword(), "UTF-8") + "&pasteSource=" + URLEncoder.encode("" + paste.getSource(), "UTF-8") + "&pasteTags="
-					+ URLEncoder.encode("" + paste.getTags(), "UTF-8") + "&pasteExpiryDate=" + URLEncoder.encode("" + paste.getExpiryDate(), "UTF-8") + "&pasteSyntax="
-					+ URLEncoder.encode("" + paste.getSyntax(), "UTF-8") + "&pasteColor=" + URLEncoder.encode("" + paste.getColor(), "UTF-8"));
+
+			query = "act=update" + "&a=" + URLEncoder.encode(this.tmpKey, "UTF-8") + "&id=" + URLEncoder.encode("" + paste.getId(), "UTF-8") + "&pasteTitle="
+					+ URLEncoder.encode("" + paste.getTitle(), "UTF-8");
+			if (paste.getDescription() != null)
+				query += "&pasteDescription=" + URLEncoder.encode("" + paste.getDescription(), "UTF-8");
+
+			query += "&pasteContent=" + URLEncoder.encode("" + paste.getContent(), "UTF-8");
+
+			if (paste.getStatus() != null)
+				query += "&pasteStatus=" + URLEncoder.encode("" + paste.getStatus(), "UTF-8");
+
+			if (paste.getPassword() != null)
+				query += "&c=" + URLEncoder.encode("" + paste.getPassword(), "UTF-8");
+
+			if (paste.getSource() != null)
+				query += "&pasteSource=" + URLEncoder.encode("" + paste.getSource(), "UTF-8");
+
+			if (paste.getTags() != null)
+				query += "&pasteTags=" + URLEncoder.encode("" + paste.getTags(), "UTF-8");
+			if (paste.getExpiryDate() != null)
+				query += "&pasteExpiryDate=" + URLEncoder.encode("" + paste.getExpiryDate(), "UTF-8");
+
+			if (paste.getSyntax() != null)
+				query += "&pasteSyntax=" + URLEncoder.encode("" + paste.getSyntax(), "UTF-8");
+
+			if (paste.getColor() != null)
+				query += "&pasteColor=" + URLEncoder.encode("" + paste.getColor(), "UTF-8");
+
 		} catch (UnsupportedEncodingException e) {
-			e.printStackTrace();
 			throw new IPasteException(CLIENT_EXCEPTION + e);
 		}
+
+		response = this.call(query);
 
 		if (this.isErrorResponse(response))
 			throw new IPasteException(response);
@@ -246,7 +270,7 @@ public class IPaste implements IPasteCore {
 		String response;
 		String query;
 		try {
-			
+
 			query = "act=insert" + "&a=" + URLEncoder.encode(this.tmpKey, "UTF-8") + "&pasteTitle=" + URLEncoder.encode("" + paste.getTitle(), "UTF-8");
 			if (paste.getDescription() != null)
 				query += "&pasteDescription=" + URLEncoder.encode("" + paste.getDescription(), "UTF-8");
@@ -272,7 +296,7 @@ public class IPaste implements IPasteCore {
 
 			if (paste.getColor() != null)
 				query += "&pasteColor=" + URLEncoder.encode("" + paste.getColor(), "UTF-8");
-			
+
 		} catch (UnsupportedEncodingException e) {
 			throw new IPasteException(CLIENT_EXCEPTION + e);
 		}
