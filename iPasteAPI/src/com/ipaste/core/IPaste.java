@@ -161,10 +161,39 @@ public class IPaste implements IPasteCore {
 	public List<Integer> getUserPastes() throws IPasteException {
 		List<Integer> list = null;
 		this.validateTmpKey(this.tmpKey);
-		String response = this.call("act=get_all_user_pastes&frm=" + IPasteResponseFormat.JSON + "&a=" + this.tmpKey);
+		String response;
+		try {
+			response = this.call("act=get_all_user_pastes&frm=" + URLEncoder.encode(IPasteResponseFormat.JSON,"UTF-8") + "&a=" + this.tmpKey);
+		} catch (UnsupportedEncodingException e) {
+			throw new IPasteException(CLIENT_EXCEPTION + "internal error");
+		}
 		if (!this.isErrorResponse(response))
 			list = this.jsonToIntegerList(response);
 		else
+			throw new IPasteException(response);
+		return list;
+	}
+
+	@Override
+	public List<Integer> getUserPastes(String responseFormat) throws IPasteException {
+		List<Integer> list = null;
+		this.validateTmpKey(this.tmpKey);
+		this.validateField(responseFormat, IPasteResponseFormat.class);
+		String response;
+		try {
+			response = this.call("act=get_all_user_pastes&frm=" + URLEncoder.encode(responseFormat,"UTF-8") + "&a=" + URLEncoder.encode(this.tmpKey, "UTF-8"));
+		} catch (UnsupportedEncodingException e) {
+			throw new IPasteException(CLIENT_EXCEPTION + "internal error");
+		}
+		if (!this.isErrorResponse(response)) {
+			if (responseFormat == IPasteResponseFormat.JSON)
+				list = this.jsonToIntegerList(response);
+			// responseFormat == IPasteResponseFormat.RAW = TEXT
+			else if (responseFormat == IPasteResponseFormat.TEXT)
+				list = this.textToIntegerList(response);
+			else if (responseFormat == IPasteResponseFormat.CVS)
+				list = this.cvsToIntegerList(response);
+		} else
 			throw new IPasteException(response);
 		return list;
 	}
@@ -178,16 +207,27 @@ public class IPaste implements IPasteCore {
 	 * @throws IPasteException
 	 */
 	@Override
-	public List<Integer> getUserPastes(String responseFormat) throws IPasteException {
+	public List<Integer> getUserPastes(String responseFormat, String username) throws IPasteException {
 		List<Integer> list = null;
 		this.validateTmpKey(this.tmpKey);
+		this.validateUsername(username);
 		this.validateField(responseFormat, IPasteResponseFormat.class);
-		String response = this.call("act=get_all_user_pastes&frm=" + responseFormat + "&a=" + this.tmpKey);
+		String response;
+		try {
+			response = this.call("act=get_all_user_pastes&frm=" + responseFormat + "&a=" + URLEncoder.encode(this.tmpKey, "UTF-8") + "&uid=" + URLEncoder.encode(username, "UTF-8"));
+		} catch (UnsupportedEncodingException e) {
+			throw new IPasteException(CLIENT_EXCEPTION + "internal error");
+		}
 		if (!this.isErrorResponse(response)) {
 			if (responseFormat == IPasteResponseFormat.JSON)
 				list = this.jsonToIntegerList(response);
-			else if (responseFormat == IPasteResponseFormat.RAW || responseFormat == IPasteResponseFormat.TEXT)
+			else if (responseFormat == IPasteResponseFormat.TEXT) // responseFormat
+																	// ==
+																	// IPasteResponseFormat.RAW
+																	// = TEXT
 				list = this.textToIntegerList(response);
+			else if (responseFormat == IPasteResponseFormat.CVS)
+				list = this.cvsToIntegerList(response);
 		} else
 			throw new IPasteException(response);
 		return list;
@@ -202,9 +242,9 @@ public class IPaste implements IPasteCore {
 	 * @throws IPasteException
 	 */
 	@Override
-	public List<Integer> getUserPastes(String responseFormat, String tmpKey) throws IPasteException {
+	public List<Integer> getUserPastes(String responseFormat, String username, String tmpKey) throws IPasteException {
 		this.tmpKey = tmpKey;
-		return this.getUserPastes(responseFormat);
+		return this.getUserPastes(responseFormat, username);
 	}
 
 	@Override
@@ -368,6 +408,7 @@ public class IPaste implements IPasteCore {
 	@Override
 	public String get(int pasteId, String format) throws IPasteException {
 		this.validateTmpKey(this.tmpKey);
+		this.validateField(format, IPasteExtraResponseFormat.class);
 		if (pasteId == 0)
 			throw new IPasteException(CLIENT_EXCEPTION + "invalid paste id");
 		String response = null;
@@ -587,6 +628,20 @@ public class IPaste implements IPasteCore {
 			throw new IPasteException(CLIENT_EXCEPTION + e);
 		}
 
+		return list;
+	}
+
+	private List<Integer> cvsToIntegerList(String response) throws IPasteException {
+		System.out.println("called cvs to int");
+		List<Integer> list = new ArrayList<Integer>();
+		String[] arr = response.split(",");
+		try {
+			for (String s : arr) {
+				list.add(Integer.parseInt(s));
+			}
+		} catch (NumberFormatException e) {
+			throw new IPasteException(CLIENT_EXCEPTION + e);
+		}
 		return list;
 	}
 

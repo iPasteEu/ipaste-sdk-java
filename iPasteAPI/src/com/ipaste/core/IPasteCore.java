@@ -43,8 +43,12 @@ public interface IPasteCore extends IPasteConstants {
 	 * @return
 	 * @throws IPasteException
 	 */
-	List<Integer> getUserPastes(String responseFormat) throws IPasteException;
+	public List<Integer> getUserPastes(String responseFormat) throws IPasteException;
+
 	public List<Integer> getUserPastes(String format, String tmpKey) throws IPasteException;
+
+	public List<Integer> getUserPastes(String responseFormat, String username, String tmpKey) throws IPasteException;
+
 	/**
 	 * Updates users paste. You should set the iPastePaste id otherwise it will
 	 * return an KO.
@@ -137,5 +141,4 @@ public interface IPasteCore extends IPasteConstants {
 	 */
 	public String get(int pasteId, String format, String tmpKey) throws IPasteException;
 
-	
 }

@@ -1,4 +1,4 @@
-package com.ipaste.sample;
+package com.ipaste.samples;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -47,16 +47,22 @@ public class TryMe {
 		} catch (IPasteException e) {
 			System.out.println(e);
 		}
+//		try {
+//			System.out.println("getUserPastes() - Your pastes are: " + ipaste.getUserPastes());
+//		} catch (IPasteException e) {
+//			System.out.println(e);
+//		}
+		
 		try {
-			System.out.println("getUserPastes() - Your pastes are: " + ipaste.getUserPastes());
-		} catch (IPasteException e) {
-			System.out.println(e);
+			System.out.println("\ngetUserPastes(IPasteResponseFormat.TEXT) - Your pastes are: " + ipaste.getUserPastes(IPasteResponseFormat.CVS, "testt")+"\n");
+		} catch (IPasteException e1) {
+			System.out.println(e1);
 		}
-		try {
-			System.out.println("getUserPastes(IPasteResponseFormat.TEXT) - Your pastes are: " + ipaste.getUserPastes(IPasteResponseFormat.TEXT));
-		} catch (IPasteException e) {
-			System.out.println(e);
-		}
+//		try {
+//			System.out.println("getUserPastes(IPasteResponseFormat.TEXT) - Your pastes are: " + ipaste.getUserPastes(IPasteResponseFormat.TEXT));
+//		} catch (IPasteException e) {
+//			System.out.println(e);
+//		}
 		int ret = -1;
 		try {
 			// ret = ipaste.paste(new Paste("Title Title Title",
@@ -116,8 +122,8 @@ public class TryMe {
 		try {
 
 			System.out.println("update(Paste paste) - Result:"
-					+ ipaste.update(new Paste(3952, "BBBB Title Title", "BBBB Description Description Description", "BBBB content contentcontent content content content", PasteValidStatuses.HIDDEN,
-							"BBBB password password", "https://www.ipasteBBBB.eu", "BBBB tags tags tagstags", PasteValidExpiryDates.ONE_MONTH, PasteValidSyntaxes.TERA_TERM_MACRO,
+					+ ipaste.update(new Paste(3952, "CCCC Title Title", "CCCC Description Description Description", "CCCC content contentcontent content content content", PasteValidStatuses.HIDDEN,
+							"CCCC password password", "https://www.ipasteCCCC.eu", "CCCC tags tags tagstags", PasteValidExpiryDates.ONE_MONTH, PasteValidSyntaxes.TERA_TERM_MACRO,
 							PasteValidColours.RED)));
 		} catch (IPasteException e) {
 			System.out.println(e);
